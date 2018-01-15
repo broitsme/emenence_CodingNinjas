@@ -1,19 +1,144 @@
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.WeakHashMap;
 
 public class mixedProblems {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int numberOfGates = scanner.nextInt();
-        int[][] gates = new int[numberOfGates][2];
-        for (int i = 0; i < numberOfGates; i++) {
-            gates[i][0] = scanner.nextInt();
-            gates[i][1] = scanner.nextInt();
-        }
-        System.out.println(tollGate.solveTollGateProblem(gates));
-        //System.out.println(time);
+        int capacities[] = {1, 2, 3, 4, 5};
+        int weights[][] = {{5, 1},
+                {8, 2},
+                {9, 3},
+                {8, 4},
+                {5, 5}};
+        System.out.println(monkAndCakes.solver(capacities, weights));
+
+
+
     }
-    static long time = 1;
+
+
+    static class monkAndCakes {
+        static long solver(int[] capacities, int[][] weights) {
+            putAllPermutationIn(capacities, weights.length);
+            solverHelp(weights, 0);
+            return time;
+        }
+
+        static long time = Long.MAX_VALUE;
+        static void solverHelp(int[][] weights, long timeTillNow) {
+            if (cakesAreOver(weights)) {
+                if (timeTillNow < time) {
+                    time = timeTillNow;
+                }
+                return;
+            }
+            for (int i = 0; i < permutationsOfCapacities.size(); i++) {
+                int[] capacities = permutationsOfCapacities.get(i);
+                int[][] w = copyOf(weights);
+                boolean chk = true;
+                for (int j = 0; j < w.length; j++) {
+                    if ((w[j][0] - capacities[j]) > 0 && capacities[j] % w[j][1] == 0) {
+                        w[j][0] -= capacities[j];
+                    } else if (w[j][0] > 0 && w[j][0] < capacities[j]) {
+                        w[j][0] = 0;
+                    } else if(w[j][0] != 0){
+                        chk = false;
+                        break;
+                    }
+                }
+                for (int x = 0; x < w.length; x++){
+                    System.out.print(w[x][0]+" ");
+                }
+                System.out.println();
+                if (chk) {
+                    solverHelp(w, timeTillNow + 1);
+                }
+            }
+        }
+        static void putAllPermutationInHelp(int[] arr, String str, int maxLen) {
+            if (str.length() == maxLen * 2) {
+                int[] ary = getIntegers(str);
+                permutationsOfCapacities.add(ary);
+                return;
+            }
+
+            if (arr.length == 0) {
+                if (str.length() == maxLen * 2) {
+                    int[] ary = getIntegers(str);
+                    permutationsOfCapacities.add(ary);
+                    return;
+                }
+            }
+            for (int i = 0; i < arr.length; i++) {
+                int[] newArr = eleminateElement(arr, i);
+                String newStr = str + arr[i] + " ";
+                putAllPermutationInHelp(newArr, newStr, maxLen);
+            }
+        }
+
+        static void putAllPermutationIn(int[] capacities, int maxLen) {
+            if (capacities.length < maxLen) {
+                int[] balancedCapacities = balcanceCapacities(capacities, maxLen);
+                putAllPermutationInHelp(balancedCapacities, "", maxLen);
+            } else {
+                putAllPermutationInHelp(capacities, "", maxLen);
+            }
+        }
+        static int[] getIntegers(String str){
+            String[] tokens = str.split(" ");
+            int[] ary = new int[tokens.length];
+            int i = 0;
+            for (String token : tokens) {
+                ary[i++] = Integer.parseInt(token);
+            }
+            return ary;
+        }
+
+
+        static int[][] copyOf(int[][] arr) {
+            int[][] w = new int[arr.length][arr[0].length];
+            for (int i = 0; i < arr.length; i++) {
+                w[i][0] = arr[i][0];
+                w[i][1] = arr[i][1];
+            }
+            return w;
+        }
+
+        static ArrayList<int[]> permutationsOfCapacities = new ArrayList<>();
+
+
+
+        static int[] balcanceCapacities(int[] capacities, int maxLen) {
+            int[] balanced = new int[maxLen];
+            for (int i = 0; i < capacities.length; i++) {
+                balanced[i] = capacities[i];
+            }
+            return balanced;
+        }
+
+        static int[] eleminateElement(int[] arr, int index) {
+            int[] newArr = new int[arr.length - 1];
+            int j = 0;
+            for (int i = 0; i < arr.length; i++) {
+                if (i != index) {
+                    newArr[j++] = arr[i];
+                }
+            }
+            return newArr;
+        }
+
+
+        static boolean cakesAreOver(int[][] weights) {
+            for (int i = 0; i < weights.length; i++) {
+                if (weights[i][0] != 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     static class tollGate {
         private static int min = Integer.MAX_VALUE;
         static int solveTollGateProblem(final int[][] gates) {
@@ -22,7 +147,7 @@ public class mixedProblems {
         }
 
         private static void solver(final int gates[][], int indexOfGates, int[] menForFight, int pricePaid) {
-            time++;
+
             if (indexOfGates == gates.length) {
                 if (pricePaid < min) {
                     min = pricePaid;

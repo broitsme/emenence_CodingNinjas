@@ -1,5 +1,5 @@
 package numberTheory;
-import java.lang.reflect.Array;
+
 import java.util.*;
 
 public class numberTheory {
@@ -19,6 +19,7 @@ public class numberTheory {
             System.out.println(getCountXY(arr, k, 0));
         }
     }
+
     static long getCountXY(long[] arr,long k,int index) {
         if (index == arr.length) {
             return 0;
