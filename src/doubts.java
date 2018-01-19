@@ -4,18 +4,86 @@ import java.util.Collections;
 
 public class doubts {
     public static void main(String[] args) {
-        Polynomial first = new Polynomial();
-        first.setCoefficient(3, 1);
-        first.setCoefficient(1, 2);
-        first.setCoefficient(7, 3);
-        Polynomial second = new Polynomial();
-        second.setCoefficient(2, 7);
-        second.setCoefficient(1, 8);
-        Polynomial add = first.add(second);
-        Polynomial subract = first.subtaract(second);
-        add.print();
-        subract.print();
+        ArrayList<String> str = Recursion.getPermutations("abc");
+        Recursion.printArrayList(str);
     }
+
+
+
+
+
+
+
+
+
+
+    static class Recursion{
+    static void printArrayList(ArrayList<String> strings) {
+        for (int i = 0; i < strings.size(); i++) {
+            System.out.println(strings.get(i));
+        }
+    }
+    static ArrayList<String> getPermutations(String str) {
+        if (str.length() == 0) {
+            //if length of str(string) is zero then an ArrayList is returned with one element, " ".
+            ArrayList<String> empty = new ArrayList<>();
+            empty.add(" ");
+            return empty;
+        }
+        ArrayList<String> smallAns = getPermutations(str.substring(1, str.length()));//passing whole string except 1st character.
+        ArrayList<String> ans = putCharInStrings(smallAns, str.charAt(0));
+        return ans;
+    }
+
+    static ArrayList<String> putCharInStrings(ArrayList<String> smallAns, char ch) {
+        //character ch(char) is added on all positions of the strings present in smallAns(arrayList)
+        ArrayList<String> newListOfStrings = new ArrayList<>();
+        for (int i = 0; i < smallAns.size(); i++) {
+            String str = smallAns.get(i);
+            for (int j = 0; j < str.length(); j++) {
+                String strLeft = str.substring(0, j);
+                String strRight = str.substring(j, str.length());
+                newListOfStrings.add(strLeft + ch + strRight);
+            }
+        }
+        return newListOfStrings;
+    }
+
+
+
+
+
+        static int fibbonacci(int n) {
+            if (n == 0 || n == 1) {
+                return n;
+            }
+            int Nminus1 = fibbonacci(n - 1);
+            int Nminus2 = fibbonacci(n - 2);
+            return Nminus1 + Nminus2;
+        }
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static class Polynomial {
         int[] coefficients = new int[10000000]; //its indices are degrees and saves coefficients on them.

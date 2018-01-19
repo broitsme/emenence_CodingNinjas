@@ -1,67 +1,82 @@
+package numberTheory;
+
+import com.sun.deploy.util.SyncAccess;
 import matrix.Matrix;
 import numberTheory.numberTheory;
 import java.util.*;
 
 public class numberTheory2 {
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int t = scanner.nextInt();
-        primesTillSqrtUpper = segmentedSeive.getPrimesTill(100000000);
-        while (t-- > 0){
-            long lower = scanner.nextLong();
-            long upper = scanner.nextLong();
-            ArrayList<Long> primes = segmentedSeive.getAllPrimesBetween(lower, upper);
-            for (int i = 0; i < primes.size(); i++){
-                System.out.println(primes.get(i));
-            }
-        }
+        SegmentedSeive.solve();
     }
-    static ArrayList<Integer> primesTillSqrtUpper;
-    static class segmentedSeive {
+    static class SegmentedSeive {
         static ArrayList<Long> getAllPrimesBetween(long lower, long upper) {
-            //based on altered version of sieve of eranthoses.
-            long segmenteSeive[] = new long[(int) (upper - lower) + 1];
-            int k = 0;
-            while (primesTillSqrtUpper.get(k) * primesTillSqrtUpper.get(k) <= upper) {
-                int currentPrime = primesTillSqrtUpper.get(k);
-                for (int j = 2; (j * currentPrime) <= upper; j++) {
-                    int current = j * currentPrime;
-                    if (current >= lower) {
-                        segmenteSeive[(int) ((current) - lower)] = 1;
-                    }
+            //based on seive of eranthoses.
+            int length = (int) (upper - lower) + 1;
+            boolean segmentedSeive[] = new boolean[length];
+            int i = 0;
+            while ((primes.get(i) * primes.get(i)) <= upper) {
+                long prime = primes.get(i);
+                long base = (lower / prime) * prime;
+                if(base < lower || base == prime){
+                    base += prime;
                 }
-                k++;
+                if(lower < prime){
+                    base+= prime;
+                }
+                for (int j = (int) base; (j - (int) lower) < segmentedSeive.length; j += prime) {
+                    segmentedSeive[j - (int) lower] = true;
+                }
+                i++;
             }
-            ArrayList<Long> primes = new ArrayList<>();
-            for (int i = 0; i < segmenteSeive.length; i++) {
-                if (segmenteSeive[i] == 0) {
-                    primes.add(i + lower);
+            ArrayList<Long> requiredPrimes = new ArrayList<>();
+            for (int j = 0; j < segmentedSeive.length; j++) {
+                if (segmentedSeive[j] == false) {
+                    requiredPrimes.add(j + lower);
                 }
             }
-            return primes;
+            return requiredPrimes;
         }
 
-        static ArrayList<Integer> getPrimesTill(int n) {
-            //based on sieve of eranthoses.
-            boolean seive[] = new boolean[n + 1];
-            ArrayList<Integer> primes = new ArrayList<>();
+        static ArrayList<Long> primes; //primes till sqrt(2147483647) are stored in it.
 
-            for (int i = 2; i < Math.sqrt(n); i++) {
+        static void generatePrimes() {
+            //based on seive Of eranthoses.
+            //as the max value in problem is 2147483647, and sqrt(2147483647) is approximately 46341.
+            primes = new ArrayList<>();
+            boolean[] seive = new boolean[46341];
+            for (int i = 2; (i * i) < seive.length; i++) {
                 if (seive[i] == false) {
-                    for (int j = 2; i * j <= n; j++) {
+                    for (int j = 2; (i * j) < seive.length; j++) {
                         seive[i * j] = true;
                     }
                 }
             }
-
             for (int i = 2; i < seive.length; i++) {
                 if (seive[i] == false) {
-                    primes.add(i);
+                    primes.add((long) i);
                 }
             }
-            return primes;
+        }
+
+        static void solve() {
+            //test are number of test cases.
+            SegmentedSeive.generatePrimes();
+            Scanner scanner = new Scanner(System.in);
+            int test = scanner.nextInt();
+            while (test-- > 0) {
+                long lower = scanner.nextLong();
+                long upper = scanner.nextLong();
+                ArrayList<Long> primes = getAllPrimesBetween(lower, upper);
+                for (int i = 0; i < primes.size(); i++) {
+                    System.out.println(primes.get(i));
+                }
+            }
+            scanner.close();
         }
     }
+
     static class EulersToitent {
         static int getNumOfCoPrimes(int n) {
             //based on euler's totient function.
@@ -72,25 +87,26 @@ public class numberTheory2 {
             //returns coefficient with of n in euler's totient function.
             //based on the concept of sieve of eranthoses.
             double seive[] = new double[n + 1];
-            for (int i = 0; i < seive.length; i++){
+            for (int i = 0; i < seive.length; i++) {
                 seive[i] = i;
             }
-            for (int i = 2; i < seive.length; i++){
-                if(seive[i] == i){
-                    for (int j = 2; i * j < seive.length; j++){
-                        double r = 1 / (double)i;
+            for (int i = 2; i < seive.length; i++) {
+                if (seive[i] == i) {
+                    for (int j = 2; i * j < seive.length; j++) {
+                        double r = 1 / (double) i;
                         seive[i * j] = seive[i * j] * (1 - r);
                     }
                 }
             }
-            if((int)seive[seive.length - 1] != n) {
+            if ((int) seive[seive.length - 1] != n) {
                 return (int) seive[seive.length - 1];
             }
             return n - 1;
         }
     }
-    static class NthIncome{
-        static long solve(long zDay, long fDay, long nDay){
+
+    static class NthIncome {
+        static long solve(long zDay, long fDay, long nDay) {
             long a = MatrixExpo.getNthFibb(nDay - 2);
             long b = MatrixExpo.getNthFibb(nDay - 1);
             return (long) ((Math.pow(zDay + 1, a) * Math.pow(fDay + 1, b)) - 1);
